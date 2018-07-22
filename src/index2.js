@@ -9,13 +9,28 @@ class App extends React.Component{
             money:0
         })
     }
+    handleRmbChange=(money)=>{
+        this.setState({
+            unit:'rmb',
+            money:money
+        })
+    }
+    handleUsdChange=(money)=>{
+        this.setState({
+            unit:'usd',
+            money:money
+        })
+    }
+    toRmb(money){
+        return money*6.7
+    }
+    toUsd(money){
+        return money/6.7
+    }
+    convert=(converter,money)=>{
+        return  Math.round(converter(money)*1000)/1000
 
-    toRmb=money=>money*6.7
-
-    toUsd=money=>money/6.7
-
-    convert=(converter,money)=> Math.round(converter(money)*1000)/1000
-
+    }
     render(){
         let money = this.state.money
         let unit = this.state.unit
@@ -24,8 +39,8 @@ class App extends React.Component{
         return (
             <div>
                 <h2>付款计算器</h2>
-                <MoneyInput unit='rmb' money={rmb} onMoneyInput={(money)=>{this.setState({unit:'rmb',money:money})}} ></MoneyInput>
-                <MoneyInput unit='usd' money={usd} onMoneyInput={(money)=>{this.setState({unit:'usd',money:money})}}></MoneyInput>
+                <MoneyInput unit='rmb' money={rmb} onMoneyInput={this.handleRmbChange} ></MoneyInput>
+                <MoneyInput unit='usd' money={usd} onMoneyInput={this.handleUsdChange}></MoneyInput>
                 <BuySomething money={money}></BuySomething>
             </div>
         )
@@ -51,17 +66,18 @@ function BuySomething(props){
 class MoneyInput extends React.Component{
 
 
+    handleInputChange=(e)=>{
+        let money = e.target.value;
+       money = money.substring(0,6).replace(/[^.\d]+/,'')
+        this.props.onMoneyInput(money)
+
+    }
     render(){
         return (
             <div>
                 <fieldset>
                     <legend>请输入金额({unitName[this.props.unit]})</legend>
-                    <input type="text" value={this.props.money} onChange={(e)=>{
-    let money = e.target.value;
-    money = money.substring(0,6).replace(/[^.\d]+/,'')
-    this.props.onMoneyInput(money)
-
-}}/>
+                    <input type="text" value={this.props.money} onChange={this.handleInputChange}/>
                 </fieldset>
             </div>
         )
